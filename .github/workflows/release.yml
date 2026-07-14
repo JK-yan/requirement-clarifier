@@ -1,0 +1,41 @@
+name: Release Skill
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate skill
+        run: python3 scripts/validate_skill.py .
+
+      - name: Package skill
+        run: |
+          zip -r "requirement-clarifier.skill" . \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x "__pycache__/*" \
+            -x "scripts/__pycache__/*" \
+            -x "*.pyc" \
+            -x ".DS_Store" \
+            -x ".gitignore"
+          ls -lh "requirement-clarifier.skill"
+
+      - name: Upload .skill to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: requirement-clarifier.skill
+          body: |
+            安装方式：
+            1. 下载 `requirement-clarifier.skill`。
+            2. 在 OpenCode / Claude Code 中导入该文件，或解压到对应 skill 目录。
+            
+            许可证：PolyForm Noncommercial License 1.0.0（非商用）。
