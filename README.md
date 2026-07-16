@@ -35,7 +35,56 @@ git clone https://github.com/JK-yan/requirement-clarifier.git \
 
 其他平台请参照各自文档中的 skill 安装目录。
 
-### 方式二：导入 .skill 包
+### 方式二：自动更新（可选）
+
+Claude Code 和 OpenCode 原生不直接订阅 GitHub 仓库更新，可通过以下方式自动拉取最新版本。
+
+#### A. Claude Code：使用 claude-skill-manager
+
+```bash
+git clone https://github.com/ashimoon/claude-skill-manager.git ~/.claude/skills/claude-skill-manager
+```
+
+在 Claude Code 中对话：
+
+```text
+Install this skill: https://github.com/JK-yan/requirement-clarifier
+Update requirement-clarifier
+Update all my skills
+```
+
+`claude-skill-manager` 会记住来源，每次执行 `Update ...` 时从 GitHub 拉取并让你审阅 diff。
+
+#### B. OpenCode：使用 opencode-remote-config 插件
+
+在 `~/.config/opencode/remote-config.json` 中添加：
+
+```json
+{
+  "repositories": [
+    {
+      "url": "https://github.com/JK-yan/requirement-clarifier.git",
+      "ref": "main",
+      "skills": { "include": ["requirement-clarifier"] }
+    }
+  ]
+}
+```
+
+安装并启用 `opencode-remote-config` 插件后，启动 OpenCode 会自动同步仓库更新。
+
+#### C. 通用定时任务（不依赖插件）
+
+```bash
+# 安装 skill
+git clone https://github.com/JK-yan/requirement-clarifier.git \
+  ~/.config/opencode/skills/requirement-clarifier
+
+# 每天 09:00 自动拉取更新
+(crontab -l 2>/dev/null; echo "0 9 * * * cd ~/.config/opencode/skills/requirement-clarifier && git pull -q") | crontab -
+```
+
+### 方式三：导入 .skill 包
 
 从 GitHub Releases 下载 `requirement-clarifier.skill` 文件，按各平台指引导入。
 
@@ -152,7 +201,7 @@ python3 scripts/validate_skill.py .
 
 1. 推送代码到 GitHub。
 2. 进入 **Releases** → **Draft a new release**。
-3. 选择 tag（如 `v1.12.0`），填写标题和说明。
+3. 选择 tag（如 `v2.0.0`），填写标题和说明。
 4. 发布后，Actions 会自动完成打包和上传。
 
 ## 证据纪律

@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0] - 2026-07-16
+
+### Changed
+
+- 同步 skill 核心文件到 v2.0：重构并精简 `SKILL.md` 正文，将铁律升级为"五条铁律"。
+- 持久文件结构增加 `parking.md`（需求停车场）。
+- `references/chain-audit-checklist.md` 新增 sub-agent 探索回收契约，要求子代理必须带回 `file:line + 原文片段`。
+- `scripts/verify_evidence.py` 增加 `【假设·未取证】` 标签识别。
+- `templates/questionnaire-template.md` 新增出题规则（依赖剪枝、建议选项分级）。
+- 更新 `SKILL.md` frontmatter 版本号为 `2.0.0`。
+
 ## [1.12.0] - 2026-07-14
 
 ### 初始开源版本
