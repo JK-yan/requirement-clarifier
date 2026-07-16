@@ -14,6 +14,7 @@
 3. 无主数值探测: 含金额/天数/期数/日期/时刻/百分比的行,若无保护标记
    (【】标签 / 证据引用 / 演示|示例 / 待确认 / Q·BQ编号 / 标题·引用行) → WARN;--strict 下计为 FAIL。
 4. 覆盖行统计: 文件宣称"逐维度/盲区"时,逐维度结论行(含 适用/不适用)不足 8 行 → WARN。
+5. 【业务确认】日期检查: 该标签所在行无日期(铁律4要求业务确认必须带日期) → WARN;--strict 下计为 FAIL。
 
 另: 统计三档溯源标签,集中列出全部【假设】。存在 FAIL → 退出码 1。
 """
@@ -26,6 +27,7 @@ CITE = re.compile(
 LABELS = ("【业务确认】", "【开发拟定】", "【假设】", "【假设·未取证】")
 BARENUM = re.compile(r'\d+(?:\.\d+)?\s*(?:万|元|块|期|天|个月|小时|%|％)|\d{4}[-/年]\d{1,2}|\d{1,2}:\d{2}')
 PROTECT = re.compile(r'【|证据[:：]|演示|示例|待确认|待定|存疑|Q\d|BQ\d|维度')
+DATE = re.compile(r'\d{4}\s*[-/.年]\s*\d{1,2}')
 
 def norm(s): return re.sub(r'\s+', '', s)
 
@@ -67,7 +69,7 @@ def main():
     for fp in a.files:
         text = Path(fp).read_text(encoding="utf-8", errors="replace")
         print(f"\n== 核验 {fp} (root={root}) ==")
-        cites_here, bare, in_code = 0, [], False
+        cites_here, bare, undated, in_code = 0, [], [], False
         for i, line in enumerate(text.splitlines(), 1):
             st = line.strip()
             if st.startswith("```"): in_code = not in_code; continue
@@ -86,6 +88,8 @@ def main():
                 if lab in line:
                     label_count[lab] += line.count(lab)
                     if lab == "【假设】": assumptions.append(f"{fp}:L{i} {st[:80]}")
+                    if lab == "【业务确认】" and not in_code and not DATE.search(line):
+                        undated.append((i, st[:60]))
         if cites_here == 0:
             print(f"  ⚠⚠ 零引用: 本文件没有任何证据引用 —— 未受证据保护,其中来源性陈述一律视同【假设】")
             n_warn += 1
@@ -95,6 +99,12 @@ def main():
             for ln, s in bare[:8]: print(f"     L{ln}: {s}")
             if a.strict: n_fail += len(bare)
             else: n_warn += len(bare)
+        if undated:
+            tag = "✗" if a.strict else "△"
+            print(f"  {tag} 【业务确认】缺日期 {len(undated)} 处(铁律4:业务确认必须带日期):")
+            for ln, s in undated[:8]: print(f"     L{ln}: {s}")
+            if a.strict: n_fail += len(undated)
+            else: n_warn += len(undated)
         if ("逐维度" in text or "盲区" in text):
             dim = len(re.findall(r"^\s*(?:\d+[.、]|[-|*]).*(?:适用|不适用)", text, re.M))
             if dim < 8:

@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0] - 2026-07-16
+
+### Added
+
+- **`scripts/check_questionnaire.py`**：确认单回执机检。阶段三验收答案前先跑——机判未答题（阻塞级未答 FAIL）、多选提示、"我不清楚"未给知情人、第一部分未核对、落款缺失（填写人/日期缺失 FAIL）、模板内部注释残留。机检通过 ≠ 验收完成，成色分级与冲突检测仍由 AI 完成。
+- **`examples/demo-project/`**：完整走查案例（逾期提醒）。从一句微信语音到可开工 spec 的全链路缩微版，含脏回答处理（新需求剥离进 parking、"看着办"落为【开发拟定】、代签风险挂待办），spec 通过 `verify_evidence.py` 核验（7 PASS / 0 FAIL），回执通过 `check_questionnaire.py` 机检。
+
+### Changed
+
+- `scripts/verify_evidence.py` 新增第 5 项机判：【业务确认】所在行缺日期 → WARN，`--strict` 下计为 FAIL（补齐铁律 4"业务确认必须带日期"的机检兜底）。
+- `SKILL.md` 阶段三接入回执机检步骤；参考文件区补充新脚本与示例目录。
+
 ## [2.3.0] - 2026-07-16
 
 ### Changed
