@@ -14,79 +14,16 @@
 
 ## 核心能力
 
-1. 用系统化的盲区清单挑出业务没讲清、但开发动手前必须确认的漏洞。
-2. 对业务回答做三色分级（【业务确认】/【开发拟定】/【假设】）与冲突检测。
-3. 处理开发中途的需求变更。
-4. 逆向现有 Excel / 老系统的公式为规则文档，并交规则 owner 验真。
-5. 维护 `docs/requirements/` 下的业务上下文，越用越懂这个业务。
-6. 产出开发规格和业务能看懂的可填写确认单。
-7. 有代码库时主动审计操作 × 状态的组合链路，把代码里没人定义过的规则暴露成待确认问题。
+| 能力 | 说明 |
+|---|---|
+| **需求澄清** | 接住业务口头/聊天/PRD 等原始需求，用盲区清单系统性挑漏洞，把问题变成业务能回答的选择题，最终输出开发规格 + 业务确认单。 |
+| **变更管理** | 业务中途改需求时，判定变更来源、定位受影响条目、分析返工量，让业务知情拍板。 |
+| **上下文沉淀** | 维护 `docs/requirements/context.md`，积累业务黑话、干系人、系统约束、已确认决定，越用越懂这个业务。 |
+| **逆向工程** | 把老 Excel / 老系统的公式和规则逆向成文档，找规则 owner 验真，用对数回归保证新老系统结果一致。 |
+| **链路审计** | 有代码库时，主动审计实体状态 × 操作的组合矩阵，发现守卫缺失、规则未定义等隐患。 |
+| **证据纪律** | 所有结论必须贴溯源标签（【业务确认】/【开发拟定】/【假设】），引用可核验，交付前可机检。 |
 
-## 安装
-
-### 方式一：clone 到 skill 目录（推荐）
-
-**OpenCode / Claude Code：**
-
-```bash
-git clone https://github.com/JK-yan/requirement-clarifier.git \
-  ~/.config/opencode/skills/requirement-clarifier
-```
-
-其他平台请参照各自文档中的 skill 安装目录。
-
-### 方式二：自动更新（可选）
-
-Claude Code 和 OpenCode 原生不直接订阅 GitHub 仓库更新，可通过以下方式自动拉取最新版本。
-
-#### A. Claude Code：使用 claude-skill-manager
-
-```bash
-git clone https://github.com/ashimoon/claude-skill-manager.git ~/.claude/skills/claude-skill-manager
-```
-
-在 Claude Code 中对话：
-
-```text
-Install this skill: https://github.com/JK-yan/requirement-clarifier
-Update requirement-clarifier
-Update all my skills
-```
-
-`claude-skill-manager` 会记住来源，每次执行 `Update ...` 时从 GitHub 拉取并让你审阅 diff。
-
-#### B. OpenCode：使用 opencode-remote-config 插件
-
-在 `~/.config/opencode/remote-config.json` 中添加：
-
-```json
-{
-  "repositories": [
-    {
-      "url": "https://github.com/JK-yan/requirement-clarifier.git",
-      "ref": "main",
-      "skills": { "include": ["requirement-clarifier"] }
-    }
-  ]
-}
-```
-
-安装并启用 `opencode-remote-config` 插件后，启动 OpenCode 会自动同步仓库更新。
-
-#### C. 通用定时任务（不依赖插件）
-
-```bash
-# 安装 skill
-git clone https://github.com/JK-yan/requirement-clarifier.git \
-  ~/.config/opencode/skills/requirement-clarifier
-
-# 每天 09:00 自动拉取更新
-(crontab -l 2>/dev/null; echo "0 9 * * * cd ~/.config/opencode/skills/requirement-clarifier && git pull -q") | crontab -
-```
-
-### 方式三：导入 .skill 包
-
-从 GitHub Releases 下载 `requirement-clarifier.skill` 文件，按各平台指引导入。
+> 一句话：让开发者少被业务来回折磨，把每次需求对接的成果沉淀成可维护的规格文档。
 
 ## 快速开始
 
@@ -171,6 +108,21 @@ requirement-clarifier/
 ├── CONTRIBUTING.md               # 贡献指南
 └── CHANGELOG.md                  # 版本记录
 ```
+
+## 安装
+
+**方式一：clone 到 skill 目录（推荐）**
+
+```bash
+git clone https://github.com/JK-yan/requirement-clarifier.git \
+  ~/.config/opencode/skills/requirement-clarifier
+```
+
+兼容 `.claude/skills/`、`.agents/skills/` 等目录，具体路径取决于你使用的 Agent 平台。
+
+**方式二：导入 .skill 包**
+
+从 [GitHub Releases](https://github.com/JK-yan/requirement-clarifier/releases) 下载 `requirement-clarifier.skill` 文件，按各平台指引导入。
 
 ## 打包与发布
 
